@@ -20,19 +20,18 @@ public class SecurityConfig {
             .cors().and()
             .authorizeHttpRequests(auth -> auth
                 // ✅ allow backend APIs
-                .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/portfolio/**").permitAll()
+                .requestMatchers("/api/auth/").permitAll()
+                .requestMatchers("/api/portfolio/").permitAll()
 
-                // ✅ allow static resources (images, css, js, uploads)
+                // ✅ allow static resources (images, css, js)
                 .requestMatchers(
-                    "/images/**",
-                    "/css/**",
-                    "/js/**",
-                    "/static/**",
-                    "/uploads/**"   // <-- allow uploaded images
+                    "/images/",
+                    "/css/",
+                    "/js/",
+                    "/static/"
                 ).permitAll()
 
-                // ✅ everything else also open (can restrict later)
+                // ✅ everything else also open
                 .anyRequest().permitAll()
             );
 
@@ -43,12 +42,17 @@ public class SecurityConfig {
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(Arrays.asList("http://localhost:5173")); // React dev server
+
+        // ✅ Only your production frontend
+        config.setAllowedOrigins(Arrays.asList(
+            "https://cicd-project-frontend-phi.vercel.app/"
+        ));
+
         config.setAllowedHeaders(Arrays.asList("*"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config);
+        source.registerCorsConfiguration("/", config);
         return new CorsFilter(source);
     }
 }
