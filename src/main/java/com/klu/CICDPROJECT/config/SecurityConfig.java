@@ -5,11 +5,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 import java.util.Arrays;
-import java.util.List;
 
 @Configuration
 public class SecurityConfig {
@@ -17,32 +16,33 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable())
+            .csrf(csrf -> csrf.disable()) // Disable CSRF for APIs
             .cors().and()
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/portfolio/**").permitAll()
-                .requestMatchers("/images/**", "/css/**", "/js/**", "/static/**").permitAll()
                 .anyRequest().permitAll()
             );
 
         return http.build();
     }
 
-    // ✅ Global CORS config
     @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
+    public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(List.of(
-            "http://localhost:5173",                        // local dev
-            "https://cicd-project-frontend-phi.vercel.app"  // production
+
+        // ✅ Allow both localhost (dev) and Vercel (prod)
+        config.setAllowedOrigins(Arrays.asList(
+            "http://localhost:5173",
+            "https://cicd-project-frontend-phi.vercel.app"
         ));
+
+        config.setAllowedHeaders(Arrays.asList("*"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        config.setAllowedHeaders(List.of("*"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config); // apply to all endpoints
-        return source;
+        source.registerCorsConfiguration("/**", config);
+        return new CorsFilter(source);
     }
 }
