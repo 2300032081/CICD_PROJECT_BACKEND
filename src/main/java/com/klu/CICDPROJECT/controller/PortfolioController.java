@@ -35,4 +35,15 @@ public class PortfolioController {
         return ResponseEntity.ok(portfolioService.mapToDTO(portfolio));
     }
 
+    // Get portfolio by username
+@GetMapping("/username/{username}")
+public ResponseEntity<PortfolioDTO> getPortfolioByUsername(@PathVariable String username) {
+    Portfolio portfolio = portfolioService.findByUsername(username);
+    if (portfolio == null) {
+        return ResponseEntity.notFound().build();
+    }
+    return ResponseEntity.ok(portfolioService.mapToDTO(portfolio));
+}
+
+
 }
