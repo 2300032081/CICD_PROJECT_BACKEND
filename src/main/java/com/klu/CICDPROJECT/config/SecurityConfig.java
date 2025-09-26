@@ -19,19 +19,9 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable()) // Disable CSRF for APIs
             .cors().and()
             .authorizeHttpRequests(auth -> auth
-                // ✅ allow backend APIs
-                .requestMatchers("/api/auth/").permitAll()
-                .requestMatchers("/api/portfolio/").permitAll()
-
-                // ✅ allow static resources (images, css, js)
-                .requestMatchers(
-                    "/images/",
-                    "/css/",
-                    "/js/",
-                    "/static/"
-                ).permitAll()
-
-                // ✅ everything else also open
+                .requestMatchers("/api/auth/**").permitAll()       // ✅ allow all auth APIs
+                .requestMatchers("/api/portfolio/**").permitAll()  // ✅ allow all portfolio APIs
+                .requestMatchers("/images/**", "/css/**", "/js/**", "/static/**").permitAll()
                 .anyRequest().permitAll()
             );
 
@@ -43,16 +33,17 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
 
-        // ✅ Only your production frontend
+        // ✅ Allow both localhost (dev) and vercel.app (prod)
         config.setAllowedOrigins(Arrays.asList(
-            "https://cicd-project-frontend-phi.vercel.app/"
+            "http://localhost:5173",
+            "https://cicd-project-frontend-phi.vercel.app"
         ));
 
         config.setAllowedHeaders(Arrays.asList("*"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/", config);
+        source.registerCorsConfiguration("/**", config); // ✅ Apply to all endpoints
         return new CorsFilter(source);
     }
 }
