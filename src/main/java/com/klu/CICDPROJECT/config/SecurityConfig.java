@@ -5,10 +5,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 public class SecurityConfig {
@@ -16,11 +17,11 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable()) // Disable CSRF for APIs
+            .csrf(csrf -> csrf.disable())
             .cors().and()
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll()       // ✅ allow all auth APIs
-                .requestMatchers("/api/portfolio/**").permitAll()  // ✅ allow all portfolio APIs
+                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/api/portfolio/**").permitAll()
                 .requestMatchers("/images/**", "/css/**", "/js/**", "/static/**").permitAll()
                 .anyRequest().permitAll()
             );
@@ -28,22 +29,20 @@ public class SecurityConfig {
         return http.build();
     }
 
+    // ✅ Global CORS config
     @Bean
-    public CorsFilter corsFilter() {
+    public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-
-        // ✅ Allow both localhost (dev) and vercel.app (prod)
-        config.setAllowedOrigins(Arrays.asList(
-            "http://localhost:5173",
-            "https://cicd-project-frontend-phi.vercel.app"
+        config.setAllowedOrigins(List.of(
+            "http://localhost:5173",                        // local dev
+            "https://cicd-project-frontend-phi.vercel.app"  // production
         ));
-
-        config.setAllowedHeaders(Arrays.asList("*"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", config); // ✅ Apply to all endpoints
-        return new CorsFilter(source);
+        source.registerCorsConfiguration("/**", config); // apply to all endpoints
+        return source;
     }
 }
