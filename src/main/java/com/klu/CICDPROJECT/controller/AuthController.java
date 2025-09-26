@@ -13,7 +13,10 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
+@CrossOrigin(
+    origins = "https://cicd-project-frontend.vercel.app", // your frontend
+    allowCredentials = "true"
+)
 public class AuthController {
 
     @Autowired
@@ -29,7 +32,6 @@ public class AuthController {
     }
 
     // Login
- // Login
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> login(@RequestBody User user) {
         User dbUser = userRepository.findByUsername(user.getUsername())
@@ -40,7 +42,7 @@ public class AuthController {
         if (dbUser != null && dbUser.getPassword().equals(user.getPassword())) {
             response.put("message", "Login successful");
             response.put("username", dbUser.getUsername());
-            response.put("id", dbUser.getId()); // 👈 return userId
+            response.put("id", dbUser.getId());
             return ResponseEntity.ok(response);
         } else {
             response.put("message", "Invalid credentials");
@@ -50,7 +52,7 @@ public class AuthController {
 
     // Get user by username
     @GetMapping("/user/{username}")
-    public ResponseEntity<?> getUserByUsername(@PathVariable String username) {
+    public ResponseEntity<UserDTO> getUserByUsername(@PathVariable String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
