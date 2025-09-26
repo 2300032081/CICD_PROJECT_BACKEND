@@ -14,7 +14,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/auth")
 @CrossOrigin(
-    origins = "https://cicd-project-frontend.vercel.app", // your frontend
+    origins = "https://cicd-project-frontend-phi.vercel.app", // your frontend
     allowCredentials = "true"
 )
 public class AuthController {
