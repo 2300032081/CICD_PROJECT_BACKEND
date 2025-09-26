@@ -27,6 +27,11 @@ public class PortfolioService {
         return portfolioRepository.findByUser(user);
     }
 
+    public Portfolio findByUsername(String username) {
+    return portfolioRepository.findByUserUsername(username).orElse(null);
+}
+
+
     // Map Portfolio entity to DTO
     public PortfolioDTO mapToDTO(Portfolio portfolio) {
         PortfolioDTO dto = new PortfolioDTO();
