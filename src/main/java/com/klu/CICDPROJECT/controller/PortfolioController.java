@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/portfolio")
 @CrossOrigin(
-    origins = "https://cicd-project-frontend.vercel.app", // your frontend
+    origins = "https://cicd-project-frontend-phi.vercel.app/", // your frontend
     allowCredentials = "true"
 )
 public class PortfolioController {
